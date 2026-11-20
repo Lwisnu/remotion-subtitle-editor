@@ -1,30 +1,51 @@
 # Remotion Subtitle Editor
 
-A small Remotion project for adding timed captions to an existing video.
+Local Linux workflow for generating Indonesian subtitles with Whisper and rendering them into an MP4 with Remotion.
 
-## Features
-- Render a source video with timestamped subtitle segments.
-- White bold captions with dark backing for readability.
-- Optional highlighted words.
-- Transcript segments are kept as data, separate from the video composition.
+## Requirements
 
-## Setup
+- Node.js 18.19+ (Node 20 LTS recommended)
+- Python 3.10+
+- FFmpeg installed and available on PATH
+
+## Install
+
 ```bash
 npm install
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Generate Indonesian subtitles
+
+Put your source video anywhere on your computer, then run:
+
+```bash
+source .venv/bin/activate
+python scripts/transcribe.py "/path/to/your-video.mp4" --language id --model small
+```
+
+The script copies the video to `public/source.mp4` and writes timestamped speech segments to `public/captions.json`.
+
+For a faster but less accurate model use `--model base`. For better accuracy (and more memory/time) use `--model medium`.
+
+## Preview and render
+
+```bash
 npm run dev
 ```
 
-## Add a video and captions
-1. Put the source video in the `public` directory.
-2. Set `videoSrc` in `src/Root.tsx` to the public video path.
-3. Replace the sample caption segments with timestamped transcript text.
+Open Remotion Studio to preview. Render with:
 
-## Render
 ```bash
-npm run build
+npm run render
 ```
 
-The rendered file is written to `out/subtitle-video.mp4`.
+Output: `out/subtitle-video.mp4`.
 
-## Automatic transcription
-This initial commit provides the timed-caption renderer. Speech recognition (for example, Whisper transcription and SRT import) is not included yet and will be added as a separate step.
+## Notes
+
+- Whisper runs locally, so the video and audio do not need to be uploaded to a third-party transcription website.
+- Check the transcript before publishing: names, slang, noisy audio, and overlapping speakers may need correction.
+- The current subtitle renderer uses bold white text with a dark translucent background.
